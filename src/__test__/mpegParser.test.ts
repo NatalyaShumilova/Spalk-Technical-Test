@@ -14,5 +14,5 @@ describe("mpegParser", () => {
     var result = await parseFile(failureFile);
     expect(result.valid).toBe(false);
     expect(result.output).toContain("Error: No sync byte present in packet 20535, offset 3860580");
-  }, 10000);
+  });
 });
