@@ -7,4 +7,8 @@ const file = fs.createReadStream(fileName, { highWaterMark: 188 });
 
 console.log("Parsing ", file.path);
 
-await parseFile(file);
+const result = await parseFile(file);
+
+result.output.forEach((o) => console.log(o));
+
+console.log(`File is ${result.valid ? "valid" : "invalid"}`);
