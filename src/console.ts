@@ -9,6 +9,8 @@ console.log("Parsing ", file.path);
 
 const result = await parseFile(file);
 
-result.output.forEach((o) => console.log(o));
+result.valid && result.packetIds.forEach((o) => console.log(o));
 
-console.log(`File is ${result.valid ? "valid" : "invalid"}`);
+result.errorMessage && console.log(result.errorMessage);
+
+console.log(result.valid ? "0" : "1");
