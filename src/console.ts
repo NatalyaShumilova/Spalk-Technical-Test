@@ -1,43 +1,45 @@
 import { parseFile, getStartPoints } from "./mpegParser.js";
 import fs from "fs";
 
-const fileName = process.argv[2];
+export const validate = async (fileName: string) => {
+  console.log("Parsing ", fileName);
 
-console.log("Parsing ", fileName);
+  const startPointStream = fs.createReadStream(fileName, { start: 0, end: 187 });
 
-const startPointStream = fs.createReadStream(fileName, { start: 0, end: 187 });
+  const startPoints = await getStartPoints(startPointStream);
 
-const startPoints = await getStartPoints(startPointStream);
+  if (!startPoints.length) {
+    console.log("Error: No sync byte found within first 188 bytes of the stream");
+  } else {
+    let point = 0;
+    let errors = [];
 
-if (!startPoints.length) {
-  console.log("Error: No sync byte found within first 188 bytes of the stream");
-} else {
-  let point = 0;
+    while (point < startPoints.length) {
+      const stream = fs.createReadStream(fileName, { highWaterMark: 188, start: startPoints[point] });
 
-  let errors = [];
+      const result = await parseFile(stream);
 
-  while (point < startPoints.length) {
-    const file = fs.createReadStream(fileName, { highWaterMark: 188, start: startPoints[point] });
+      if (result.valid) {
+        result.packetIds.forEach((o) => console.log(o));
+        console.log(`Started at byte ${startPoints[point]}`);
+        console.log(0);
+        point = startPoints.length;
+        break;
+      }
 
-    const result = await parseFile(file);
-
-    if (result.valid) {
-      result.packetIds.forEach((o) => console.log(o));
-      console.log(`Started at byte ${startPoints[point]}`);
-      console.log(0);
-      point = startPoints.length;
-      break;
+      errors.push({ ...result.error, startPoint: startPoints[point] });
+      point++;
     }
 
-    errors.push({ ...result.error, startPoint: startPoints[point] });
-    point++;
+    if (errors.length === startPoints.length) {
+      const furthestError = errors.sort((a, b) => b.distance - a.distance)[0];
+      console.log(furthestError?.message);
+      console.log(`Started at byte ${furthestError?.startPoint}`);
+      console.log(1);
+    }
   }
+};
 
-  if (errors.length === startPoints.length) {
-    const furthestError = errors.sort((a, b) => b.distance - a.distance)[0];
-    console.log(errors, startPoints);
-    console.log(furthestError?.message);
-    console.log(`Started at byte ${furthestError?.startPoint}`);
-    console.log(1);
-  }
-}
+const fileName = process.argv[2];
+
+validate(fileName);

@@ -8,7 +8,6 @@ const startPointStream = () => fs.createReadStream("test_files/test_failure.ts",
 describe("mpegParser", () => {
   test("Given partialFile when getStartPoints called return all sync byte locations", async () => {
     var result = await getStartPoints(startPointStream());
-    console.log(result);
     expect(result).toContain(187);
   });
   test("Given sync byte when parseFile called return valid", async () => {
