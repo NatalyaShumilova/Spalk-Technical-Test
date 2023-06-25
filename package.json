@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "start": "node dist/console.js"
+    "start": "node dist/main.js"
   },
   "repository": {
     "type": "git",

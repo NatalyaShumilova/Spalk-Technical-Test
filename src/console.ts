@@ -16,7 +16,6 @@ export const validate = async (fileName: string) => {
 
     while (point < startPoints.length) {
       const stream = fs.createReadStream(fileName, { highWaterMark: 188, start: startPoints[point] });
-
       const result = await parseFile(stream);
 
       if (result.valid) {
@@ -40,6 +39,8 @@ export const validate = async (fileName: string) => {
   }
 };
 
-const fileName = process.argv[2];
+export const runConsole = () => {
+  const fileName = process.argv[2];
 
-validate(fileName);
+  validate(fileName);
+};
