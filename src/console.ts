@@ -1,6 +1,10 @@
 import { parseFile, getStartPoints } from "./mpegParser.js";
 import fs from "fs";
 
+/**
+ * Validates the given file and writes validation results to the console.
+ * @param fileName the path of the file to parse
+ */
 export const validate = async (fileName: string) => {
   console.log("Parsing ", fileName);
 

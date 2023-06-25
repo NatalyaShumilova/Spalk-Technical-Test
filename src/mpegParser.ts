@@ -1,5 +1,10 @@
 import { ReadStream } from "fs";
 
+/**
+ * Locates all potential sync bytes within the provided stream, and returns an array of indexes.
+ * @param stream the file stream to check
+ * @returns the indexes of all potential sync bytes
+ */
 export const getStartPoints = async (stream: ReadStream) => {
   let startPoints: number[] = [];
 
@@ -13,6 +18,11 @@ export const getStartPoints = async (stream: ReadStream) => {
   return await end;
 };
 
+/**
+ * Validates each individual packet. Checks for the presence of a sync byte, and parses the packet Id.
+ * @param buffer the packet to check
+ * @returns An object containing an error status and the packet Id
+ */
 const validatePacket = (buffer: Buffer) => {
   const hasSyncByte = buffer.toString("hex", 0, 1) === "47";
   if (!hasSyncByte) {
@@ -24,6 +34,11 @@ const validatePacket = (buffer: Buffer) => {
   return { error: false, packetId };
 };
 
+/**
+ * Reads the provided stream and validates each chunk (packet).
+ * @param stream the file stream to parse
+ * @returns An object containing the validation result, an array of packet Ids, and error details
+ */
 export const parseFile = async (stream: ReadStream) => {
   let chunk = 0;
   let error = { message: "", distance: 0 };
